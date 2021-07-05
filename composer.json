@@ -1,0 +1,10 @@
+{
+    "name": "persec/ksher-sdk-php-v2",
+    "authors": [
+        {
+            "name": "wattana",
+            "email": "wattana.php@gmail.com"
+        }
+    ],
+    "require": {}
+}
