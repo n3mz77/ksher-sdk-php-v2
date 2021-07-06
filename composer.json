@@ -1,5 +1,6 @@
 {
     "name": "persec/ksher-sdk-php-v2",
+    "version": "1.0",
     "authors": [
         {
             "name": "wattana",
