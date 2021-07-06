@@ -8,6 +8,15 @@ use Persec\KSherSdkV2\Exceptions\RuntimeException;
 class Request
 {
     /**
+     * @var bool $isDebug
+     */
+    private $isDebug = false;
+    public function __construct(bool $isDebug = false)
+    {
+        $this->isDebug = $isDebug;
+    }
+
+    /**
      * @param $method
      * @param $url
      * @param array $data
@@ -16,24 +25,37 @@ class Request
      * @throws RuntimeException
      * @throws RequestException
      */
-    private function doRequest($method, $url, array $data = [], $headers = []): ?string
+    private function doRequest($method, $url, array $data, $headers = []): ?string
     {
-        $curl = curl_init($url);
-        $params = json_encode($data);
-        switch (strtoupper($method)) {
+        $endpoint = $url;
+        $methodUpper = strtoupper($method);
+        if ($methodUpper === 'GET') {
+            $queryParams = http_build_query($data);
+            $endpoint = $url . "?$queryParams";
+        }
+        $curl = curl_init($endpoint);
+        switch ($methodUpper) {
             case 'GET':
-                curl_setopt($curl, CURLOPT_POST, false);
+                //ignore
                 break;
             case 'POST':
-                curl_setopt($curl, CURLOPT_POST, true);
+                $params = json_encode($data);
+                curl_setopt($curl, CURLOPT_POST, 1);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
                 break;
             default:
+                $params = json_encode($data);
                 curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
         }
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $params);
         if (count($headers) > 0) {
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         }
+        if ($this->isDebug) {
+            curl_setopt($curl, CURLOPT_VERBOSE, true);
+        }
+
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $response = curl_exec($curl);
         $httpStatusCode = intval(curl_getinfo($curl, CURLINFO_HTTP_CODE));
         $errNo = curl_errno($curl);
@@ -50,52 +72,52 @@ class Request
 
     /**
      * @param string $url
-     * @param $params
+     * @param array $params
      * @param array $headers
      * @return string|null
      * @throws RequestException
      * @throws RuntimeException
      */
-    public function get(string $url, $params, array $headers = []): ?string
+    public function get(string $url, array $params, array $headers = []): ?string
     {
         return $this->doRequest('GET', $url, $params, $headers);
     }
 
     /**
      * @param string $url
-     * @param $params
+     * @param array $params
      * @param array $headers
      * @return string|null
      * @throws RequestException
      * @throws RuntimeException
      */
-    public function post(string $url, $params, array $headers = []): ?string
+    public function post(string $url, array $params, array $headers = []): ?string
     {
         return $this->doRequest('POST', $url, $params, $headers);
     }
 
     /**
      * @param string $url
-     * @param $params
+     * @param array $params
      * @param array $headers
      * @return string|null
      * @throws RequestException
      * @throws RuntimeException
      */
-    public function put(string $url, $params, array $headers = []): ?string
+    public function put(string $url, array $params, array $headers = []): ?string
     {
         return $this->doRequest('PUT', $url, $params, $headers);
     }
 
     /**
      * @param string $url
-     * @param $params
+     * @param array $params
      * @param array $headers
      * @return string|null
      * @throws RequestException
      * @throws RuntimeException
      */
-    public function delete(string $url, $params, array $headers = []): ?string
+    public function delete(string $url, array $params, array $headers = []): ?string
     {
         return $this->doRequest('DELETE', $url, $params, $headers);
     }

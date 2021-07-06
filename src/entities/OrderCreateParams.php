@@ -35,8 +35,28 @@ class OrderCreateParams
     public $timestamp;
 
     /**
-     * @var string $provider
+     * @var string $channel
      */
-    public $provider;
+    public $channel;
+    //"channel": "alipay,wechat,linepay,airpay,promptpay,truemoney,ktbcard"
 
+    /**
+     * OrderCreateParams constructor.
+     * @param $orderId
+     * @param $amount
+     * @param $successUrl
+     * @param $failUrl
+     * @param string $channel
+     * @param string $note
+     */
+    public function __construct($orderId, $amount, $successUrl, $failUrl, $channel = '', $note = '')
+    {
+        $this->merchant_order_id = $orderId;
+        $this->amount = $amount;
+        $this->redirect_url = $successUrl;
+        $this->redirect_url_fail = $failUrl;
+        $this->note = $note;
+        $this->timestamp = time() . '';
+        $this->channel = $channel;
+    }
 }

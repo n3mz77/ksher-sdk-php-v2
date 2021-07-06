@@ -6,5 +6,19 @@
             "email": "wattana.php@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "php": "^7.3",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/",
+            "src/entities",
+            "src/exceptions"
+        ]
+    },
+    "require-dev": {
+        "vlucas/phpdotenv": "^5.3"
+    }
 }

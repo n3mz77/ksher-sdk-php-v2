@@ -25,12 +25,19 @@ class PaySdk extends BaseSDK
     {
         parent::__construct($token, $debug);
         $this->host = $host;
-        $this->request = new Request();
+        $this->request = new Request($debug);
     }
 
     private function getURL(string $path): string
     {
         return $this->host.self::API.$path;
+    }
+
+    private function prepareData($url, $object) : array
+    {
+        $prepare = (array) $object;
+        $prepare[$this->KEY_SIGNATURE] = $this->getSignature($url, $prepare);
+        return $prepare;
     }
 
     /**
@@ -42,7 +49,8 @@ class PaySdk extends BaseSDK
     public function orderCreate(OrderCreateParams $order): ?string
     {
         $url = $this->getURL('/');
-        return $this->request->post($url, $order, ['Content-Type : "application/json"']);
+        $prepareData = $this->prepareData($url, $order);
+        return $this->request->post($url, $prepareData, ['Content-Type: application/json']);
     }
 
     /**
@@ -54,8 +62,9 @@ class PaySdk extends BaseSDK
      */
     public function orderQuery(string $orderId, OrderQueryParams $params): ?string
     {
-        $url = $this->getURL('/');
-        return $this->request->get($url, $params);
+        $url = $this->getURL('/'.$orderId);
+        $prepareData = $this->prepareData($url, $params);
+        return $this->request->get($url, $prepareData);
     }
 
     /**
@@ -68,7 +77,8 @@ class PaySdk extends BaseSDK
     public function orderRefund(string $orderId, OrderRefundParams $data): ?string
     {
         $url = $this->getURL("/$orderId");
-        return $this->request->put($url, $data, ['Content-Type : "application/json"']);
+        $prepareData = $this->prepareData($url, $data);
+        return $this->request->put($url, $prepareData, ['Content-Type: application/json']);
     }
 
     /**
@@ -81,6 +91,7 @@ class PaySdk extends BaseSDK
     public function orderCancel(string $orderId, OrderCancelParams $params): ?string
     {
         $url = $this->getURL("/$orderId");
-        return $this->request->delete($url, $params, ['Content-Type : "application/json"']);
+        $prepareData = $this->prepareData($url, $params);
+        return $this->request->delete($url, $prepareData, ['Content-Type: application/json']);
     }
 }

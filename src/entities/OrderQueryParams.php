@@ -9,8 +9,8 @@ class OrderQueryParams
      */
     public $timestamp;
 
-    public function __construct($timestamp)
+    public function __construct($timestamp = null)
     {
-        $this->timestamp = $timestamp;
+        $this->timestamp = ($timestamp ?? time()) . '';
     }
 }

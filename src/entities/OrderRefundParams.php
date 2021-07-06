@@ -24,17 +24,11 @@ class OrderRefundParams
      */
     public $mid;
 
-    /**
-     * @var string $provider
-     */
-    public $provider;
-
-    public function __construct($refund_amount, $timestamp, $refund_order_id, $mid, $provider)
+    public function __construct($refund_amount, $refund_order_id, $mid, $timestamp = null)
     {
         $this->refund_amount = $refund_amount;
-        $this->timestamp = $timestamp;
         $this->refund_order_id = $refund_order_id;
         $this->mid = $mid;
-        $this->provider = $provider;
+        $this->timestamp = ($timestamp ?? time()) . '';
     }
 }

@@ -14,16 +14,9 @@ class OrderCancelParams
      */
     public $mid;
 
-    /**
-     * @var string $provider
-     */
-    public $provider;
-
-
-    public function __construct($timestamp, $mid, $provider)
+    public function __construct($mid, $timestamp = null)
     {
-        $this->timestamp = $timestamp;
+        $this->timestamp = ($timestamp ?? time()) . '';
         $this->mid = $mid;
-        $this->provider = $provider;
     }
 }

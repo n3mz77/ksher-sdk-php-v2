@@ -12,7 +12,7 @@ class BaseSDK {
      */
     protected $debug = false;
 
-    private $KEY_SIGNATURE = 'signature';
+    protected $KEY_SIGNATURE = 'signature';
 
     public function __construct(string $token, $debug = false)
     {
@@ -33,7 +33,7 @@ class BaseSDK {
         foreach ($keys as $key) {
            if ($key !== $this->KEY_SIGNATURE) {
               $bucket[] = $key;
-              $bucket[] = $data;
+              $bucket[] = $data[$key];
            }
         }
         $bucketStr = implode('', $bucket);
