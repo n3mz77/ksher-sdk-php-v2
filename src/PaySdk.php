@@ -43,11 +43,11 @@ class PaySdk extends BaseSDK
 
     /**
      * @param OrderCreateParams $order
-     * @return string|null
+     * @return OrderCreateResponse|null
      * @throws Exceptions\RequestException
      * @throws Exceptions\RuntimeException
      */
-    public function orderCreate(OrderCreateParams $order): ?string
+    public function orderCreate(OrderCreateParams $order): ?OrderCreateResponse
     {
         $url = $this->getURL('/');
         $prepareData = $this->prepareData($url, $order);
