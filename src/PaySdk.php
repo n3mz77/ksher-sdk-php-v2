@@ -4,6 +4,7 @@ namespace Persec\KSherSdkV2;
 
 use Persec\KSherSdkV2\Entities\OrderCancelParams;
 use Persec\KSherSdkV2\Entities\OrderCreateParams;
+use Persec\KSherSdkV2\Entities\OrderCreateResponse;
 use Persec\KSherSdkV2\Entities\OrderQueryParams;
 use Persec\KSherSdkV2\Entities\OrderRefundParams;
 
@@ -50,7 +51,12 @@ class PaySdk extends BaseSDK
     {
         $url = $this->getURL('/');
         $prepareData = $this->prepareData($url, $order);
-        return $this->request->post($url, $prepareData, ['Content-Type: application/json']);
+        $res = $this->request->post($url, $prepareData, ['Content-Type: application/json']);
+        if (empty($res)) {
+            return null;
+        }
+        $json = json_decode($res, true);
+        return new OrderCreateResponse($json);
     }
 
     /**
