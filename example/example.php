@@ -5,7 +5,9 @@ use Dotenv\Dotenv;
 use Persec\KSherSdkV2\Entities\Channel;
 use Persec\KSherSdkV2\Entities\OrderCancelParams;
 use Persec\KSherSdkV2\Entities\OrderCreateParams;
+use Persec\KSherSdkV2\Entities\OrderCreateResponse;
 use Persec\KSherSdkV2\Entities\OrderQueryParams;
+use Persec\KSherSdkV2\Entities\OrderQueryResponse;
 use Persec\KSherSdkV2\Entities\OrderRefundParams;
 use Persec\KSherSdkV2\Exceptions\RequestException;
 use Persec\KSherSdkV2\PaySdk;
@@ -27,7 +29,7 @@ $sdk = new PaySdk($host, $token, $debug);
  * @throws RequestException
  * @throws \Persec\KSherSdkV2\Exceptions\RuntimeException
  */
-function createOrder(PaySdk $sdk, string $orderId, int $amount): ?string
+function createOrder(PaySdk $sdk, string $orderId, int $amount): ?OrderCreateResponse
 {
     $order = new OrderCreateParams(
         $orderId,
@@ -43,11 +45,11 @@ function createOrder(PaySdk $sdk, string $orderId, int $amount): ?string
 /**
  * @param PaySdk $sdk
  * @param string $orderId
- * @return string|null
+ * @return OrderQueryResponse|null
  * @throws RequestException
  * @throws \Persec\KSherSdkV2\Exceptions\RuntimeException
  */
-function queryOrder(PaySdk $sdk, string $orderId): ?string
+function queryOrder(PaySdk $sdk, string $orderId): ?OrderQueryResponse
 {
     $params = new OrderQueryParams();
     return $sdk->orderQuery($orderId, $params);
@@ -83,22 +85,11 @@ function cancelOrder(PaySdk $sdk, string $orderId, string $mid): ?string
 }
 
 try {
-    $orderId = '0007';
+    $orderId = '00011';
     $amount = 10000;
-    $order = createOrder($sdk, $orderId, $amount);
-    echo "order success\n";
+//    $order = createOrder($sdk, $orderId, $amount);
+    $order = queryOrder($sdk, $orderId);
     var_export($order);
-    echo "=============\n\n\n\n";
-
-//    $refundStatus = cancelOrder($sdk, $orderId, $mid);
-//    echo "cancel status \n\n";
-//    var_export($refundStatus);
-
-    echo "=============\n\n\n\n";
-    echo "query order\n";
-    $queryRes = queryOrder($sdk, $orderId);
-    var_export($queryRes);
-    echo "=============\n\n\n\n";
 } catch (Exception $e) {
     echo "order failed\n";
     echo $e->getMessage();

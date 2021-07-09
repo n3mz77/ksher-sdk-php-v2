@@ -6,6 +6,7 @@ use Persec\KSherSdkV2\Entities\OrderCancelParams;
 use Persec\KSherSdkV2\Entities\OrderCreateParams;
 use Persec\KSherSdkV2\Entities\OrderCreateResponse;
 use Persec\KSherSdkV2\Entities\OrderQueryParams;
+use Persec\KSherSdkV2\Entities\OrderQueryResponse;
 use Persec\KSherSdkV2\Entities\OrderRefundParams;
 
 class PaySdk extends BaseSDK
@@ -31,7 +32,12 @@ class PaySdk extends BaseSDK
 
     private function getURL(string $path): string
     {
-        return $this->host.self::API.$path;
+        return $this->host.$path;
+    }
+
+    private function getEndpoint(string $path): string
+    {
+        return self::API.$path;
     }
 
     private function prepareData($url, $object) : array
@@ -49,8 +55,9 @@ class PaySdk extends BaseSDK
      */
     public function orderCreate(OrderCreateParams $order): ?OrderCreateResponse
     {
-        $url = $this->getURL('/');
-        $prepareData = $this->prepareData($url, $order);
+        $endpoint = $this->getEndpoint('/');
+        $url = $this->getURL($endpoint);
+        $prepareData = $this->prepareData($endpoint, $order);
         $res = $this->request->post($url, $prepareData, ['Content-Type: application/json']);
         if (empty($res)) {
             return null;
@@ -62,15 +69,21 @@ class PaySdk extends BaseSDK
     /**
      * @param string $orderId
      * @param OrderQueryParams $params
-     * @return string|null
+     * @return OrderQueryResponse|null
      * @throws Exceptions\RequestException
      * @throws Exceptions\RuntimeException
      */
-    public function orderQuery(string $orderId, OrderQueryParams $params): ?string
+    public function orderQuery(string $orderId, OrderQueryParams $params): ?OrderQueryResponse
     {
-        $url = $this->getURL('/'.$orderId);
-        $prepareData = $this->prepareData($url, $params);
-        return $this->request->get($url, $prepareData);
+        $endpoint = $this->getEndpoint("/$orderId");
+        $url = $this->getURL($endpoint);
+        $prepareData = $this->prepareData($endpoint, $params);
+        $res = $this->request->get($url, $prepareData);
+        if (empty($res)) {
+            return null;
+        }
+        $json = json_decode($res, true);
+        return new OrderQueryResponse($json);
     }
 
     /**
@@ -82,8 +95,9 @@ class PaySdk extends BaseSDK
      */
     public function orderRefund(string $orderId, OrderRefundParams $data): ?string
     {
-        $url = $this->getURL("/$orderId");
-        $prepareData = $this->prepareData($url, $data);
+        $endpoint = $this->getEndpoint("/$orderId");
+        $url = $this->getURL($endpoint);
+        $prepareData = $this->prepareData($endpoint, $data);
         return $this->request->put($url, $prepareData, ['Content-Type: application/json']);
     }
 
@@ -96,8 +110,9 @@ class PaySdk extends BaseSDK
      */
     public function orderCancel(string $orderId, OrderCancelParams $params): ?string
     {
-        $url = $this->getURL("/$orderId");
-        $prepareData = $this->prepareData($url, $params);
+        $endpoint = $this->getEndpoint("/$orderId");
+        $url = $this->getURL($endpoint);
+        $prepareData = $this->prepareData($endpoint, $params);
         return $this->request->delete($url, $prepareData, ['Content-Type: application/json']);
     }
 }
